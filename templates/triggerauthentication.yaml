@@ -1,0 +1,7 @@
+{{ include "nuc-keda.renderResources" (dict
+  "root" $
+  "collection" ($.Values.triggerAuthentications | default dict)
+  "kind" "TriggerAuthentication"
+  "defaultApiVersion" $.Values.apiVersions.triggerAuthentication
+  "namespaced" true
+) }}

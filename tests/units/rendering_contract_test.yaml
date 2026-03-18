@@ -1,0 +1,89 @@
+suite: rendering contract
+templates:
+  - templates/scaledobject.yaml
+  - templates/clustertriggerauthentication.yaml
+release:
+  name: unit-test
+  namespace: unit-namespace
+
+tests:
+  - it: renders no ScaledObject documents by default
+    template: templates/scaledobject.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders no ClusterTriggerAuthentication documents by default
+    template: templates/clustertriggerauthentication.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: applies helper defaults and overrides for namespaced resources
+    values:
+      - values/rendering_contract.values.yaml
+    template: templates/scaledobject.yaml
+    documentSelector:
+      path: metadata.name
+      value: merged-scaled-object
+    asserts:
+      - isKind:
+          of: ScaledObject
+      - equal:
+          path: apiVersion
+          value: example.net/v1alpha1
+      - equal:
+          path: metadata.namespace
+          value: unit-namespace
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: keda-platform
+      - equal:
+          path: metadata.labels.platform
+          value: keda
+      - equal:
+          path: metadata.labels.component
+          value: scaled-object
+      - equal:
+          path: metadata.labels.tier
+          value: workers
+      - equal:
+          path: metadata.annotations.team
+          value: platform
+      - equal:
+          path: metadata.annotations.note
+          value: external
+      - equal:
+          path: spec.scaleTargetRef.name
+          value: worker-app
+
+  - it: renders cluster-scoped resources without namespace and with configured apiVersion
+    values:
+      - values/rendering_contract.values.yaml
+    template: templates/clustertriggerauthentication.yaml
+    documentSelector:
+      path: metadata.name
+      value: shared-auth
+    asserts:
+      - isKind:
+          of: ClusterTriggerAuthentication
+      - equal:
+          path: apiVersion
+          value: keda.sh/v1beta1
+      - notExists:
+          path: metadata.namespace
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: keda-platform
+      - equal:
+          path: metadata.labels.component
+          value: cluster-trigger-auth
+      - equal:
+          path: metadata.annotations.team
+          value: platform
+      - equal:
+          path: metadata.annotations.note
+          value: shared
+      - equal:
+          path: spec.secretTargetRef[0].name
+          value: shared-metrics-auth

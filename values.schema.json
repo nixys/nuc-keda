@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "nuc-keda values",
+  "description": "Schema for nuc-keda Helm chart values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the chart name used in generated labels."
+    },
+    "commonLabels": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Labels merged into every rendered resource."
+    },
+    "commonAnnotations": {
+      "$ref": "#/definitions/stringMap",
+      "description": "Annotations merged into every rendered resource."
+    },
+    "apiVersions": {
+      "type": "object",
+      "description": "Default API version overrides per supported KEDA resource kind.",
+      "additionalProperties": false,
+      "properties": {
+        "scaledObject": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "scaledJob": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "triggerAuthentication": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "clusterTriggerAuthentication": {
+          "$ref": "#/definitions/nonEmptyString"
+        }
+      }
+    },
+    "scaledObjects": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of ScaledObject resources keyed by resource name."
+    },
+    "scaledJobs": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of ScaledJob resources keyed by resource name."
+    },
+    "triggerAuthentications": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of TriggerAuthentication resources keyed by resource name."
+    },
+    "clusterTriggerAuthentications": {
+      "$ref": "#/definitions/resourceMap",
+      "description": "Map of ClusterTriggerAuthentication resources keyed by resource name."
+    }
+  },
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stringMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "freeFormObject": {
+      "type": "object",
+      "description": "Arbitrary KEDA payload passed through by the chart.",
+      "additionalProperties": true
+    },
+    "resourceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "$ref": "#/definitions/nonEmptyString",
+          "description": "Namespace for namespaced resources. Ignored for cluster-scoped kinds."
+        },
+        "labels": {
+          "$ref": "#/definitions/stringMap",
+          "description": "Resource-specific labels."
+        },
+        "annotations": {
+          "$ref": "#/definitions/stringMap",
+          "description": "Resource-specific annotations."
+        },
+        "apiVersion": {
+          "$ref": "#/definitions/nonEmptyString",
+          "description": "Per-resource API version override."
+        },
+        "spec": {
+          "$ref": "#/definitions/freeFormObject",
+          "description": "Resource spec rendered as-is."
+        },
+        "status": {
+          "$ref": "#/definitions/freeFormObject",
+          "description": "Optional resource status rendered as-is."
+        }
+      }
+    },
+    "resourceMap": {
+      "type": "object",
+      "default": {},
+      "propertyNames": {
+        "$ref": "#/definitions/nonEmptyString"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/resourceItem"
+      }
+    }
+  }
+}

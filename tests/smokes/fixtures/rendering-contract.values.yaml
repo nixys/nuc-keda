@@ -1,0 +1,43 @@
+nameOverride: keda-platform
+
+commonLabels:
+  platform: keda
+  component: shared
+  tier: common
+
+commonAnnotations:
+  team: platform
+  note: common
+
+apiVersions:
+  clusterTriggerAuthentication: keda.sh/v1beta1
+
+scaledObjects:
+  merged-scaled-object:
+    apiVersion: example.net/v1alpha1
+    labels:
+      component: scaled-object
+      tier: workers
+    annotations:
+      note: external
+    spec:
+      scaleTargetRef:
+        name: worker-app
+      triggers:
+        - type: cpu
+          metadata:
+            type: Utilization
+            value: "70"
+
+clusterTriggerAuthentications:
+  shared-auth:
+    namespace: should-not-render
+    labels:
+      component: cluster-trigger-auth
+    annotations:
+      note: shared
+    spec:
+      secretTargetRef:
+        - parameter: bearerToken
+          name: shared-metrics-auth
+          key: token
