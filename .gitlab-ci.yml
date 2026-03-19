@@ -1,0 +1,122 @@
+include:
+  - project: "apps/nuc-subcharts/gitlab-ci"
+    ref: "main"
+    file:
+      - "/publish-subchart.gitlab-ci.yml"
+
+stages:
+  - lint
+  - unit-tests
+  - smoke-tests
+  - compatibility_tests
+  - render
+  - validate
+
+  - validate-tag
+  - package
+  - publish
+
+variables:
+  CHART_DIR: "."
+  RELEASE_NAME: "nuc-release"
+  RELEASE_NAMESPACE: "default"
+  KUBE_VERSION: "1.35.2"
+  KUBECONFORM_VERSION: "v0.6.7"
+  RENDER_DIR: ".rendered"
+  KUBECONFORM_CRD_SCHEMA_LOCATION: "https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json"
+  KUBECONFORM_SKIP_KINDS: ""
+  GOBIN: "$CI_PROJECT_DIR/.bin"
+  GOMODCACHE: "$CI_PROJECT_DIR/.cache/go/pkg/mod"
+  GOCACHE: "$CI_PROJECT_DIR/.cache/go-build"
+  HELM_CACHE_HOME: "$CI_PROJECT_DIR/.helm/cache"
+  HELM_EXAMPLE_VALUES: "values.yaml.example"
+
+  CHART_PATH: "./"
+  HARBOR_REGISTRY: $REGISTRY_NAME
+  HARBOR_PROJECT: "public"
+
+default:
+  image:
+    name: alpine/helm:4
+    entrypoint: ["/bin/sh", "-c"]
+
+lint:
+  stage: lint
+  script:
+    - helm dependency update
+    - helm lint .
+
+unit_tests:
+  stage: unit-tests
+  script:
+    - helm plugin install https://github.com/helm-unittest/helm-unittest.git --verify=false
+    - helm unittest -f 'tests/units/*_test.yaml' .
+
+smoke_tests:
+  stage: smoke-tests
+  before_script:
+    - apk add --no-cache curl python3 py3-yaml
+    - >
+      ARCH="$(uname -m)" &&
+      case "$ARCH" in
+        x86_64) ARCH=amd64 ;;
+        aarch64) ARCH=arm64 ;;
+        *) echo "Unsupported architecture: $ARCH" >&2; exit 1 ;;
+      esac &&
+      curl -fsSL "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-${ARCH}.tar.gz" |
+      tar -xz -C /usr/local/bin kubeconform
+  script:
+    - >
+      python3 tests/smokes/run/smoke.py
+      --scenario default-empty
+      --scenario schema-invalid-list-contract
+      --scenario rendering-contract
+      --scenario example-render
+      --scenario example-kubeconform
+
+compatibility_tests:
+  stage: compatibility_tests
+  variables:
+    GIT_DEPTH: "0"
+  before_script:
+    - apk add --no-cache git
+    - git fetch --tags --force
+  script:
+    - sh tests/units/backward_compatibility_test.sh
+
+render_manifests:
+  stage: render
+  script:
+    - helm dependency build "$CHART_DIR"
+    - mkdir -p "$RENDER_DIR"
+    - >
+      helm template
+      "$RELEASE_NAME"
+      "$CHART_DIR"
+      --namespace "$RELEASE_NAMESPACE"
+      -f "$HELM_EXAMPLE_VALUES"
+      > "$RENDER_DIR/all.yaml"
+    - test -s "$RENDER_DIR/all.yaml"
+  artifacts:
+    when: always
+    paths:
+      - .rendered/
+
+kubeconform_validate:
+  image:
+    name: ghcr.io/yannh/kubeconform:latest-alpine
+    entrypoint: [""]
+  stage: validate
+  needs:
+    - job: render_manifests
+      artifacts: true
+  script:
+    - >
+      /kubeconform
+      -summary
+      -strict
+      -output json
+      -kubernetes-version "$KUBE_VERSION"
+      -schema-location default
+      -schema-location "$KUBECONFORM_CRD_SCHEMA_LOCATION"
+      "$RENDER_DIR/all.yaml"

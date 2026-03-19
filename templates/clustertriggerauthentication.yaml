@@ -1,0 +1,7 @@
+{{ include "nuc-keda.renderResources" (dict
+  "root" $
+  "collection" ($.Values.clusterTriggerAuthentications | default dict)
+  "kind" "ClusterTriggerAuthentication"
+  "defaultApiVersion" $.Values.apiVersions.clusterTriggerAuthentication
+  "namespaced" false
+) }}

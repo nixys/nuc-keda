@@ -71,28 +71,7 @@ The value contract is validated by [values.schema.json](values.schema.json).
 
 This section is generated from [values.yaml](values.yaml) by `helm-docs`. Edit [values.yaml](values.yaml) comments or [docs/README.md.gotmpl](docs/README.md.gotmpl), then run `pre-commit run helm-docs --all-files` or `make docs` if you need to refresh it outside a commit.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| apiVersions.clusterTriggerAuthentication | string | `"keda.sh/v1alpha1"` | Default apiVersion for ClusterTriggerAuthentication resources. |
-| apiVersions.scaledJob | string | `"keda.sh/v1alpha1"` | Default apiVersion for ScaledJob resources. |
-| apiVersions.scaledObject | string | `"keda.sh/v1alpha1"` | Default apiVersion for ScaledObject resources. |
-| apiVersions.triggerAuthentication | string | `"keda.sh/v1alpha1"` | Default apiVersion for TriggerAuthentication resources. |
-| clusterTriggerAuthentications | object | {} | ClusterTriggerAuthentication resources keyed by resource name. |
-| clusterTriggerAuthentications.__helm_docs_example__.namespace | string | "" | Namespace for namespaced resources. Ignored for cluster-scoped kinds. |
-| commonAnnotations | object | `{}` | Extra annotations applied to every rendered resource. |
-| commonLabels | object | `{}` | Extra labels applied to every rendered resource. |
-| nameOverride | string | `""` | Override the default chart label name if needed. |
-| scaledJobs | object | {} | ScaledJob resources keyed by resource name. |
-| scaledJobs.__helm_docs_example__.namespace | string | release namespace | Namespace for namespaced resources. Defaults to the Helm release namespace. |
-| scaledObjects | object | {} | ScaledObject resources keyed by resource name. |
-| scaledObjects.__helm_docs_example__.annotations | object | `{}` | Resource-specific annotations. |
-| scaledObjects.__helm_docs_example__.apiVersion | string | chart default for this kind | Per-resource apiVersion override. |
-| scaledObjects.__helm_docs_example__.labels | object | `{}` | Resource-specific labels. |
-| scaledObjects.__helm_docs_example__.namespace | string | release namespace | Namespace for namespaced resources. Defaults to the Helm release namespace. |
-| scaledObjects.__helm_docs_example__.spec | object | `{}` | Resource spec rendered as-is. |
-| scaledObjects.__helm_docs_example__.status | object | `{}` | Optional resource status rendered as-is. |
-| triggerAuthentications | object | {} | TriggerAuthentication resources keyed by resource name. |
-| triggerAuthentications.__helm_docs_example__.namespace | string | release namespace | Namespace for namespaced resources. Defaults to the Helm release namespace. |
+{{ template "chart.valuesTable" . }}
 
 ## Included Values Files
 

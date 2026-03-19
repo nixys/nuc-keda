@@ -1,0 +1,7 @@
+{{ include "nuc-keda.renderResources" (dict
+  "root" $
+  "collection" ($.Values.scaledObjects | default dict)
+  "kind" "ScaledObject"
+  "defaultApiVersion" $.Values.apiVersions.scaledObject
+  "namespaced" true
+) }}

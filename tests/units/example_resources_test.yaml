@@ -1,0 +1,162 @@
+suite: example resources
+templates:
+  - templates/scaledobject.yaml
+  - templates/scaledjob.yaml
+  - templates/triggerauthentication.yaml
+  - templates/clustertriggerauthentication.yaml
+release:
+  name: unit-test
+  namespace: unit-namespace
+
+tests:
+  - it: renders the expected document count per template
+    values:
+      - ../../values.yaml.example
+    asserts:
+      - hasDocuments:
+          count: 2
+        template: templates/scaledobject.yaml
+      - hasDocuments:
+          count: 1
+        template: templates/scaledjob.yaml
+      - hasDocuments:
+          count: 2
+        template: templates/triggerauthentication.yaml
+      - hasDocuments:
+          count: 1
+        template: templates/clustertriggerauthentication.yaml
+
+  - it: renders the expected example manifests
+    values:
+      - ../../values.yaml.example
+    asserts:
+      - containsDocument:
+          kind: ScaledObject
+          apiVersion: keda.sh/v1alpha1
+          name: orders-worker
+          namespace: workloads
+          any: true
+        template: templates/scaledobject.yaml
+      - containsDocument:
+          kind: ScaledObject
+          apiVersion: keda.sh/v1alpha1
+          name: payments-worker
+          namespace: finance
+          any: true
+        template: templates/scaledobject.yaml
+      - containsDocument:
+          kind: ScaledJob
+          apiVersion: keda.sh/v1alpha1
+          name: reports-generator
+          namespace: batch
+          any: true
+        template: templates/scaledjob.yaml
+      - containsDocument:
+          kind: TriggerAuthentication
+          apiVersion: keda.sh/v1alpha1
+          name: rabbitmq-auth
+          namespace: workloads
+          any: true
+        template: templates/triggerauthentication.yaml
+      - containsDocument:
+          kind: TriggerAuthentication
+          apiVersion: keda.sh/v1alpha1
+          name: azure-queue-auth
+          namespace: batch
+          any: true
+        template: templates/triggerauthentication.yaml
+      - containsDocument:
+          kind: ClusterTriggerAuthentication
+          apiVersion: keda.sh/v1alpha1
+          name: metrics-auth
+          any: true
+        template: templates/clustertriggerauthentication.yaml
+
+  - it: renders the orders ScaledObject example
+    values:
+      - ../../values.yaml.example
+    template: templates/scaledobject.yaml
+    documentSelector:
+      path: metadata.name
+      value: orders-worker
+    asserts:
+      - isKind:
+          of: ScaledObject
+      - equal:
+          path: metadata.namespace
+          value: workloads
+      - equal:
+          path: spec.triggers[0].type
+          value: rabbitmq
+
+  - it: renders the payments ScaledObject example
+    values:
+      - ../../values.yaml.example
+    template: templates/scaledobject.yaml
+    documentSelector:
+      path: metadata.name
+      value: payments-worker
+    asserts:
+      - isKind:
+          of: ScaledObject
+      - equal:
+          path: spec.triggers[0].authenticationRef.kind
+          value: ClusterTriggerAuthentication
+
+  - it: renders the ScaledJob example
+    values:
+      - ../../values.yaml.example
+    template: templates/scaledjob.yaml
+    documentSelector:
+      path: metadata.name
+      value: reports-generator
+    asserts:
+      - isKind:
+          of: ScaledJob
+      - equal:
+          path: spec.jobTargetRef.template.spec.containers[0].image
+          value: ghcr.io/example/reports:1.2.3
+
+  - it: renders the TriggerAuthentication secret refs example
+    values:
+      - ../../values.yaml.example
+    template: templates/triggerauthentication.yaml
+    documentSelector:
+      path: metadata.name
+      value: rabbitmq-auth
+    asserts:
+      - isKind:
+          of: TriggerAuthentication
+      - equal:
+          path: spec.secretTargetRef[1].parameter
+          value: username
+
+  - it: renders the TriggerAuthentication pod identity example
+    values:
+      - ../../values.yaml.example
+    template: templates/triggerauthentication.yaml
+    documentSelector:
+      path: metadata.name
+      value: azure-queue-auth
+    asserts:
+      - isKind:
+          of: TriggerAuthentication
+      - equal:
+          path: spec.podIdentity.provider
+          value: azure-workload
+
+  - it: renders the ClusterTriggerAuthentication example
+    values:
+      - ../../values.yaml.example
+    template: templates/clustertriggerauthentication.yaml
+    documentSelector:
+      path: metadata.name
+      value: metrics-auth
+    asserts:
+      - isKind:
+          of: ClusterTriggerAuthentication
+      - notExists:
+          path: metadata.namespace
+      - equal:
+          path: spec.secretTargetRef[0].parameter
+          value: bearerToken

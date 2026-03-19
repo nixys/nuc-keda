@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+name: nuc-keda
+description: Helm chart for Kubernetes KEDA custom resources
+type: application
+version: 1.0.0-rc1
+appVersion: "v1alpha1"

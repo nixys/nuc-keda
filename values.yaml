@@ -1,0 +1,89 @@
+# -- Override the default chart label name if needed.
+nameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+# -- Extra annotations applied to every rendered resource.
+commonAnnotations: {}
+
+# The defaults below are aligned with the current KEDA CRD API group.
+# Override them if your cluster uses another served version.
+apiVersions:
+  # -- Default apiVersion for ScaledObject resources.
+  scaledObject: keda.sh/v1alpha1
+  # -- Default apiVersion for ScaledJob resources.
+  scaledJob: keda.sh/v1alpha1
+  # -- Default apiVersion for TriggerAuthentication resources.
+  triggerAuthentication: keda.sh/v1alpha1
+  # -- Default apiVersion for ClusterTriggerAuthentication resources.
+  clusterTriggerAuthentication: keda.sh/v1alpha1
+
+# Each map entry supports:
+# - the top-level map key becomes metadata.name
+# - namespace: optional for namespaced resources, defaults to the release namespace
+# - labels: optional
+# - annotations: optional
+# - apiVersion: optional override for a single resource
+# - spec: arbitrary resource spec
+# - status: optional raw status block for fixtures and synthetic manifests
+
+# -- ScaledObject resources keyed by resource name.
+# @default -- {}
+scaledObjects:
+  __helm_docs_example__:
+    # -- Namespace for namespaced resources. Defaults to the Helm release namespace.
+    # @default -- release namespace
+    namespace: documentation-placeholder
+    # -- Resource-specific labels.
+    labels: {}
+    # -- Resource-specific annotations.
+    annotations: {}
+    # -- Per-resource apiVersion override.
+    # @default -- chart default for this kind
+    apiVersion: keda.sh/v1alpha1
+    # -- Resource spec rendered as-is.
+    spec: {}
+    # -- Optional resource status rendered as-is.
+    status: {}
+
+# -- ScaledJob resources keyed by resource name.
+# @default -- {}
+scaledJobs:
+  __helm_docs_example__:
+    # -- Namespace for namespaced resources. Defaults to the Helm release namespace.
+    # @default -- release namespace
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    # @default -- chart default for this kind
+    apiVersion: keda.sh/v1alpha1
+    spec: {}
+    status: {}
+
+# -- TriggerAuthentication resources keyed by resource name.
+# @default -- {}
+triggerAuthentications:
+  __helm_docs_example__:
+    # -- Namespace for namespaced resources. Defaults to the Helm release namespace.
+    # @default -- release namespace
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    # @default -- chart default for this kind
+    apiVersion: keda.sh/v1alpha1
+    spec: {}
+    status: {}
+
+# -- ClusterTriggerAuthentication resources keyed by resource name.
+# @default -- {}
+clusterTriggerAuthentications:
+  __helm_docs_example__:
+    # -- Namespace for namespaced resources. Ignored for cluster-scoped kinds.
+    # @default -- ""
+    namespace: documentation-placeholder
+    labels: {}
+    annotations: {}
+    # @default -- chart default for this kind
+    apiVersion: keda.sh/v1alpha1
+    spec: {}
+    status: {}

@@ -1,0 +1,51 @@
+scaledObjects:
+  e2e-orders-worker:
+    spec:
+      scaleTargetRef:
+        name: orders-worker
+      pollingInterval: 15
+      cooldownPeriod: 60
+      minReplicaCount: 1
+      maxReplicaCount: 5
+      triggers:
+        - type: cpu
+          metadata:
+            type: Utilization
+            value: "70"
+
+scaledJobs:
+  e2e-reports-generator:
+    spec:
+      jobTargetRef:
+        template:
+          spec:
+            restartPolicy: Never
+            containers:
+              - name: reports
+                image: busybox:1.36
+                command:
+                  - /bin/sh
+                  - -c
+                  - echo report
+      pollingInterval: 10
+      minReplicaCount: 0
+      maxReplicaCount: 2
+      triggers:
+        - type: cron
+          metadata:
+            timezone: UTC
+            start: 0 * * * *
+            end: 5 * * * *
+            desiredReplicas: "1"
+
+triggerAuthentications:
+  e2e-trigger-auth:
+    spec:
+      podIdentity:
+        provider: aws-eks
+
+clusterTriggerAuthentications:
+  e2e-cluster-trigger-auth:
+    spec:
+      podIdentity:
+        provider: aws-eks

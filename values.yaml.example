@@ -1,0 +1,146 @@
+# Example values for all supported KEDA resources in this chart.
+# Render with:
+#   helm template nuc-keda . -f values.yaml.example
+
+nameOverride: ""
+
+commonLabels:
+  platform: autoscaling
+commonAnnotations:
+  team: platform
+
+apiVersions:
+  scaledObject: keda.sh/v1alpha1
+  scaledJob: keda.sh/v1alpha1
+  triggerAuthentication: keda.sh/v1alpha1
+  clusterTriggerAuthentication: keda.sh/v1alpha1
+
+scaledObjects:
+  orders-worker:
+    namespace: workloads
+    labels:
+      component: scaled-object
+    annotations:
+      note: rabbitmq-consumer
+    spec:
+      scaleTargetRef:
+        name: orders-worker
+      pollingInterval: 15
+      cooldownPeriod: 180
+      minReplicaCount: 1
+      maxReplicaCount: 20
+      fallback:
+        failureThreshold: 3
+        replicas: 4
+      triggers:
+        - type: rabbitmq
+          metadata:
+            hostFromEnv: RABBITMQ_HOST
+            queueName: orders
+            mode: QueueLength
+            value: "25"
+          authenticationRef:
+            name: rabbitmq-auth
+  payments-worker:
+    namespace: finance
+    labels:
+      component: scaled-object
+    annotations:
+      note: prometheus-latency
+    spec:
+      scaleTargetRef:
+        name: payments-worker
+      pollingInterval: 30
+      cooldownPeriod: 300
+      idleReplicaCount: 0
+      minReplicaCount: 0
+      maxReplicaCount: 8
+      advanced:
+        horizontalPodAutoscalerConfig:
+          behavior:
+            scaleDown:
+              stabilizationWindowSeconds: 60
+      triggers:
+        - type: prometheus
+          metadata:
+            serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090
+            metricName: http_request_duration_seconds
+            threshold: "0.75"
+            query: |
+              histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{deployment="payments-worker"}[2m])) by (le))
+          authenticationRef:
+            kind: ClusterTriggerAuthentication
+            name: metrics-auth
+
+scaledJobs:
+  reports-generator:
+    namespace: batch
+    labels:
+      component: scaled-job
+    annotations:
+      note: azure-queue
+    spec:
+      jobTargetRef:
+        parallelism: 1
+        completions: 1
+        backoffLimit: 4
+        template:
+          spec:
+            restartPolicy: Never
+            containers:
+              - name: reports
+                image: ghcr.io/example/reports:1.2.3
+                command:
+                  - /app/reports
+      pollingInterval: 20
+      successfulJobsHistoryLimit: 5
+      failedJobsHistoryLimit: 5
+      minReplicaCount: 0
+      maxReplicaCount: 10
+      triggers:
+        - type: azure-queue
+          metadata:
+            queueName: reports
+            queueLength: "10"
+          authenticationRef:
+            name: azure-queue-auth
+
+triggerAuthentications:
+  rabbitmq-auth:
+    namespace: workloads
+    labels:
+      component: trigger-auth
+    annotations:
+      note: secret-target
+    spec:
+      secretTargetRef:
+        - parameter: host
+          name: rabbitmq-connection
+          key: host
+        - parameter: username
+          name: rabbitmq-connection
+          key: username
+        - parameter: password
+          name: rabbitmq-connection
+          key: password
+  azure-queue-auth:
+    namespace: batch
+    labels:
+      component: trigger-auth
+    annotations:
+      note: pod-identity
+    spec:
+      podIdentity:
+        provider: azure-workload
+
+clusterTriggerAuthentications:
+  metrics-auth:
+    labels:
+      component: cluster-trigger-auth
+    annotations:
+      note: bearer-token
+    spec:
+      secretTargetRef:
+        - parameter: bearerToken
+          name: prometheus-auth
+          key: token
