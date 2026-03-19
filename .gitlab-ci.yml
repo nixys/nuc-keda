@@ -1,3 +1,9 @@
+include:
+  - project: "apps/nuc-subcharts/gitlab-ci"
+    ref: "main"
+    file:
+      - "/publish-subchart.gitlab-ci.yml"
+
 stages:
   - lint
   - unit-tests
@@ -5,6 +11,10 @@ stages:
   - compatibility_tests
   - render
   - validate
+
+  - validate-tag
+  - package
+  - publish
 
 variables:
   CHART_DIR: "."
@@ -20,6 +30,10 @@ variables:
   GOCACHE: "$CI_PROJECT_DIR/.cache/go-build"
   HELM_CACHE_HOME: "$CI_PROJECT_DIR/.helm/cache"
   HELM_EXAMPLE_VALUES: "values.yaml.example"
+
+  CHART_PATH: "./"
+  HARBOR_REGISTRY: $REGISTRY_NAME
+  HARBOR_PROJECT: "public"
 
 default:
   image:
