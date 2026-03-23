@@ -1,3 +1,6 @@
+# -- Enable nuc-keda chart rendering.
+enabled: true
+
 # -- Override the default chart label name if needed.
 nameOverride: ""
 
