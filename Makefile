@@ -43,6 +43,7 @@ test-smoke-fast: ## Run smoke scenarios except kubeconform-dependent validation
 		--scenario default-empty \
 		--scenario schema-invalid-list-contract \
 		--scenario rendering-contract \
+		--scenario null-override \
 		--scenario example-render \
 		$(SMOKE_ARGS)
 

@@ -1,0 +1,44 @@
+suite: null override contract
+templates:
+  - templates/scaledobject.yaml
+  - templates/clustertriggerauthentication.yaml
+release:
+  name: unit-test
+  namespace: unit-namespace
+
+tests:
+  - it: suppresses a default resource when the override file sets it to null
+    values:
+      - ../../values.yaml.example
+      - values/null_override.values.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: templates/scaledobject.yaml
+      - containsDocument:
+          kind: ScaledObject
+          apiVersion: keda.sh/v1alpha1
+          name: payments-worker
+          namespace: finance
+          any: true
+        template: templates/scaledobject.yaml
+      - hasDocuments:
+          count: 1
+        template: templates/clustertriggerauthentication.yaml
+
+  - it: keeps unaffected resources after null override
+    values:
+      - ../../values.yaml.example
+      - values/null_override.values.yaml
+    template: templates/clustertriggerauthentication.yaml
+    documentSelector:
+      path: metadata.name
+      value: metrics-auth
+    asserts:
+      - isKind:
+          of: ClusterTriggerAuthentication
+      - notExists:
+          path: metadata.namespace
+      - equal:
+          path: spec.secretTargetRef[0].parameter
+          value: bearerToken

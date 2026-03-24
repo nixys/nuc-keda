@@ -2,6 +2,11 @@
 # Render with:
 #   helm template nuc-keda . -f values.yaml.example
 
+enabled: true
+
+# Accepted for umbrella-chart compatibility; ignored by this chart.
+global: {}
+
 nameOverride: ""
 
 commonLabels:

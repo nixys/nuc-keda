@@ -13,6 +13,7 @@ SCENARIO_CHOICES = [
     "default-empty",
     "schema-invalid-list-contract",
     "rendering-contract",
+    "null-override",
     "example-render",
     "example-kubeconform",
 ]

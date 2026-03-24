@@ -1,6 +1,9 @@
 # -- Enable nuc-keda chart rendering.
 enabled: true
 
+# -- Compatibility values inherited from umbrella charts. Accepted but ignored by this chart.
+global: {}
+
 # -- Override the default chart label name if needed.
 nameOverride: ""
 
@@ -28,6 +31,7 @@ apiVersions:
 # - annotations: optional
 # - apiVersion: optional override for a single resource
 # - spec: arbitrary resource spec
+# - set an entry to null in a higher-precedence values file to suppress a lower-precedence default resource
 # - status: optional raw status block for fixtures and synthetic manifests
 
 # -- ScaledObject resources keyed by resource name.

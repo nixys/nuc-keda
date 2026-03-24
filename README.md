@@ -58,8 +58,12 @@ Every map entry uses the same generic contract:
 | `spec` | no | Raw resource spec rendered as-is. |
 | `status` | no | Optional raw status block. Usually not managed through Helm in production. |
 
+In a higher-precedence values file, set a map entry to `null` to suppress a default resource from a lower-precedence values file.
+
 Global controls:
 
+- `enabled`
+- `global` (accepted for umbrella-chart compatibility and ignored by this chart)
 - `nameOverride`
 - `commonLabels`
 - `commonAnnotations`
@@ -73,6 +77,8 @@ This section is generated from [values.yaml](values.yaml) by `helm-docs`. Edit [
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| enabled | bool | `true` | Enable nuc-keda chart rendering. |
+| global | object | `{}` | Compatibility values inherited from umbrella charts. Accepted but ignored by this chart. |
 | apiVersions.clusterTriggerAuthentication | string | `"keda.sh/v1alpha1"` | Default apiVersion for ClusterTriggerAuthentication resources. |
 | apiVersions.scaledJob | string | `"keda.sh/v1alpha1"` | Default apiVersion for ScaledJob resources. |
 | apiVersions.scaledObject | string | `"keda.sh/v1alpha1"` | Default apiVersion for ScaledObject resources. |

@@ -1,3 +1,6 @@
+enabled: true
+global: {}
+
 nameOverride: keda-platform
 
 commonLabels:

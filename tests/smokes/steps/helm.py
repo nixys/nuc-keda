@@ -25,11 +25,14 @@ def lint(
     *,
     workdir: Path,
     values_file: Path | None = None,
+    values_files: list[Path] | None = None,
     check: bool = True,
 ) -> system.CommandResult:
     command = ["helm", "lint", str(chart_dir)]
     if values_file is not None:
         command.extend(["-f", str(values_file)])
+    for extra_values_file in values_files or []:
+        command.extend(["-f", str(extra_values_file)])
     return system.run(command, cwd=chart_dir, env=helm_env(workdir), check=check)
 
 
@@ -41,6 +44,7 @@ def template(
     output_path: Path,
     workdir: Path,
     values_file: Path | None = None,
+    values_files: list[Path] | None = None,
 ) -> Path:
     command = [
         "helm",
@@ -52,9 +56,10 @@ def template(
     ]
     if values_file is not None:
         command.extend(["-f", str(values_file)])
+    for extra_values_file in values_files or []:
+        command.extend(["-f", str(extra_values_file)])
 
     result = system.run(command, cwd=chart_dir, env=helm_env(workdir), check=True)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(result.stdout, encoding="utf-8")
     return output_path
-
