@@ -6,10 +6,12 @@ The chart does not install KEDA itself or its CRDs. It only renders KEDA resourc
 
 ## Quick Start
 
-Render the example configuration:
+Add the Nixys chart repository:
 
 ```bash
-helm template nuc-keda . -f values.yaml.example
+helm repo add nixys https://registry.nixys.io/chartrepo/public
+# or
+helm repo add nixys https://registry.nixys.ru/chartrepo/public
 ```
 
 Install the chart:
@@ -77,8 +79,6 @@ This section is generated from [values.yaml](values.yaml) by `helm-docs`. Edit [
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| enabled | bool | `true` | Enable nuc-keda chart rendering. |
-| global | object | `{}` | Compatibility values inherited from umbrella charts. Accepted but ignored by this chart. |
 | apiVersions.clusterTriggerAuthentication | string | `"keda.sh/v1alpha1"` | Default apiVersion for ClusterTriggerAuthentication resources. |
 | apiVersions.scaledJob | string | `"keda.sh/v1alpha1"` | Default apiVersion for ScaledJob resources. |
 | apiVersions.scaledObject | string | `"keda.sh/v1alpha1"` | Default apiVersion for ScaledObject resources. |
@@ -87,6 +87,8 @@ This section is generated from [values.yaml](values.yaml) by `helm-docs`. Edit [
 | clusterTriggerAuthentications.__helm_docs_example__.namespace | string | "" | Namespace for namespaced resources. Ignored for cluster-scoped kinds. |
 | commonAnnotations | object | `{}` | Extra annotations applied to every rendered resource. |
 | commonLabels | object | `{}` | Extra labels applied to every rendered resource. |
+| enabled | bool | `true` | Enable nuc-keda chart rendering. |
+| global | object | `{}` | Compatibility values inherited from umbrella charts. Accepted but ignored by this chart. |
 | nameOverride | string | `""` | Override the default chart label name if needed. |
 | scaledJobs | object | {} | ScaledJob resources keyed by resource name. |
 | scaledJobs.__helm_docs_example__.namespace | string | release namespace | Namespace for namespaced resources. Defaults to the Helm release namespace. |
