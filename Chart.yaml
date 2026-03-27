@@ -5,3 +5,36 @@ description: Helm chart for Kubernetes KEDA custom resources
 type: application
 version: 1.0.0-rc6
 appVersion: "v1alpha1"
+icon: https://registry.nixys.ru/logo.png
+home: https://github.com/nixys/nuc-keda
+keywords:
+  - helm
+  - universal-chart
+maintainers:
+  - name: Nixys Team
+    email: hello@nixys.io
+  - name: Peter Rukin
+    email: p.rukin@nixys.ru
+  - name: Vyacheslav Vorobev
+    email: v.vorobyov@nixys.ru
+annotations:
+  artifacthub.io/category: integration-delivery
+  artifacthub.io/prerelease: "true"
+  artifacthub.io/license: Apache License 2.0
+  artifacthub.io/links:  |
+    - name: Home
+      url: https://nixys.io
+    - name: Source
+      url: https://github.com/nixys/nuc-keda
+    - name: Core Helm Chart
+      url: https://github.com/nixys/nxs-universal-chart
+  artifacthub.io/changes: |
+    - Add Cosign Verification
+    - Add docs and links
+  artifacthub.io/recommendations: |
+    - url: https://nixys.io
+    - url: https://github.com/nixys/nuc-keda
+    - url: https://github.com/nixys/nxs-universal-chart
+  artifacthub.io/signKey: |
+    fingerprint: 332FCD67C8B83C68B5AE67884856BB650E18E5427465417E1BC62ED1C417F3BE
+    url: https://registry.nixys.io/signkey/cosign.pub
