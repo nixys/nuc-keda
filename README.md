@@ -1,5 +1,7 @@
 # NUC KEDA
 
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/nuc-keda)](https://artifacthub.io/packages/search?repo=nuc-keda)
+
 Helm chart for rendering KEDA custom resources from declarative values.
 
 The chart does not install KEDA itself or its CRDs. It only renders KEDA resources that are already supported by the target cluster.
