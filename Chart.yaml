@@ -3,7 +3,7 @@ apiVersion: v2
 name: nuc-keda
 description: Helm chart for Kubernetes KEDA custom resources
 type: application
-version: 1.0.0-rc8
+version: 1.0.0
 appVersion: "v1alpha1"
 icon: https://registry.nixys.ru/logo.png
 home: https://github.com/nixys/nuc-keda
@@ -19,7 +19,7 @@ maintainers:
     email: v.vorobyov@nixys.ru
 annotations:
   artifacthub.io/category: integration-delivery
-  artifacthub.io/prerelease: "true"
+  artifacthub.io/prerelease: "false"
   artifacthub.io/license: Apache License 2.0
   artifacthub.io/links:  |
     - name: Home

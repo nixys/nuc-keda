@@ -10,19 +10,18 @@ The chart does not install KEDA itself or its CRDs. It only renders KEDA resourc
 
 Add the Nixys chart repository:
 
+Add the Nixys chart repository:
+
 ```bash
-helm repo add nixys https://registry.nixys.io/chartrepo/public
-# or
-helm repo add nixys https://registry.nixys.ru/chartrepo/public
+helm repo add nixys https://registry.nixys.io/nuc
 ```
 
 Install the chart:
 
 ```bash
-helm install nuc-keda . \
+helm install nuc-keda nixys/nuc-keda \
   --namespace keda \
-  --create-namespace \
-  -f values.yaml.example
+  --create-namespace
 ```
 
 Install the local README generator hook:
